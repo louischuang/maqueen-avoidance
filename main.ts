@@ -21,6 +21,7 @@ function RunCycle () {
 }
 let RightSpeed = 0
 let LeftSpeed = 0
+let delayTime = 0
 maqueenPlusV2.I2CInit()
 basic.showLeds(`
     . . . . .
@@ -40,6 +41,7 @@ let frontDistance = 0
 let SlowSpeed1 = 75
 let SlowSpeed2 = 85
 basic.forever(function () {
+    delayTime = 10
     SensorL1 = 1 - maqueenPlusV2.readLineSensorState(maqueenPlusV2.MyEnumLineSensor.SensorL1)
     SensorM = 1 - maqueenPlusV2.readLineSensorState(maqueenPlusV2.MyEnumLineSensor.SensorM)
     SensorL2 = 1 - maqueenPlusV2.readLineSensorState(maqueenPlusV2.MyEnumLineSensor.SensorL2)
@@ -51,20 +53,22 @@ basic.forever(function () {
     }
     if (SensorL2 == 1) {
         IfChangeSpeed = 1
-        LeftSpeed = 255
+        LeftSpeed = 200
         RightSpeed = NormalSpeed - SlowSpeed1
     } else if (SensorR1 == 1) {
         IfChangeSpeed = 1
         RightSpeed = 255
         LeftSpeed = NormalSpeed - SlowSpeed2
+        delayTime = 15
     } else if (SensorR2 == 1) {
         IfChangeSpeed = 1
-        RightSpeed = 255
+        RightSpeed = 200
         LeftSpeed = NormalSpeed - SlowSpeed1
     } else if (SensorL1 == 1) {
         IfChangeSpeed = 1
         LeftSpeed = 255
         RightSpeed = NormalSpeed - SlowSpeed2
+        delayTime = 15
     } else if (LeftSpeed != NormalSpeed || RightSpeed != NormalSpeed) {
         IfChangeSpeed = 1
         RightSpeed = NormalSpeed
@@ -74,6 +78,9 @@ basic.forever(function () {
     }
     if (frontDistance > 0 && frontDistance < 10) {
         RunCycle()
+        IfChangeSpeed = 1
+        RightSpeed = NormalSpeed
+        LeftSpeed = NormalSpeed
     } else {
         if (IfChangeSpeed == 1) {
             maqueenPlusV2.controlMotor(maqueenPlusV2.MyEnumMotor.LeftMotor, maqueenPlusV2.MyEnumDir.Forward, LeftSpeed)
@@ -81,5 +88,5 @@ basic.forever(function () {
             IfChangeSpeed = 0
         }
     }
-    basic.pause(10)
+    basic.pause(delayTime)
 })
